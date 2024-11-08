@@ -17,7 +17,7 @@
 **Имя разработчика**  
 Краткое описание о себе: опыт, специализация или интересы.
 
-GitHub: [@username](https://github.com/Pasha883)  
+GitHub: [@Pasha883](https://github.com/Pasha883)  
 Email: pashaboss883@gmail.com
 
 ## Дополнительная информация
