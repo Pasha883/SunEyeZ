@@ -12,7 +12,7 @@
 
 ## Разработчик
 
-![Avatar](https://iimg.su/i/rdtrn)
+![Avatar](https://ltdfoto.ru/image/haHLkV)
 
 **Имя разработчика**  
 Краткое описание о себе: опыт, специализация или интересы.
