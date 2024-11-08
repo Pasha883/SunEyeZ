@@ -12,7 +12,7 @@
 
 ## Разработчик
 
-![Avatar](https://ltdfoto.ru/image/haHLkV)
+![Avatar](https://avatars.githubusercontent.com/Pasha883)
 
 **Имя разработчика**  
 Краткое описание о себе: опыт, специализация или интересы.
