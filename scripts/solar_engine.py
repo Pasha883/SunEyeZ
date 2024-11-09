@@ -114,6 +114,7 @@ def solar_processor(cord, start1, end1, shape1, KPD1):
     fig = plt.gcf()        
     ax = fig.gca()       
 
+    fig.canvas.manager.set_window_title("График")
     line = ax.lines[0]
     time_values = line.get_xdata() 
     radiation_values = line.get_ydata()
