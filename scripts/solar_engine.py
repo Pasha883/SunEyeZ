@@ -148,6 +148,9 @@ def solar_processor(cord, start1, end1, shape1, KPD1, tarif1):
 
     gui.show_plot_in_window(plt, "Солнечная радиация")
 
+
+    plt.clf()
+
     gui.progress_plus(-150)
 
     
