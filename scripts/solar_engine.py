@@ -7,6 +7,8 @@ import requests
 import math
 import numpy as np
 
+import scripts.gui_module as gui
+
 
 def get_elevation(lat, lon):
     try:
@@ -28,11 +30,11 @@ def solar_processor(cord, start1, end1, shape1, KPD1, tarif1):
     tarif = 6.73
 
     if shape1 != "":
-        shape = int(shape1)
+        shape = float(shape1)
     if KPD1 != "":
         KPD = int(KPD1)
     if tarif1 != "":
-        tarif = int(tarif1)
+        tarif = float(tarif1)
 
     start = datetime.today()
     end = start + timedelta(days=1)
@@ -43,7 +45,7 @@ def solar_processor(cord, start1, end1, shape1, KPD1, tarif1):
 
     camera_data = pd.read_csv("./temp/processed_data.csv")
     camera_data = camera_data.apply(pd.to_numeric, errors='coerce')
-    print(camera_data)
+    gui.progress_plus(10)
 
     cords_str = str.split(cord, ", ")
     cords = [float(num) for num in cords_str]
@@ -57,8 +59,7 @@ def solar_processor(cord, start1, end1, shape1, KPD1, tarif1):
                                 tz='Europe/Moscow', 
                                 altitude=alt, 
                                 name='Moscow')
-    
-    print(cords[0], " ", cords[1], " ", alt)
+
 
     times = pd.date_range(start=start, # Момент начала периода моделирования
              end=end, # Момент окончания периода моделирования
@@ -76,6 +77,7 @@ def solar_processor(cord, start1, end1, shape1, KPD1, tarif1):
     SPA['azimuth'] = SPA['azimuth'].round()
 
     SPA_copy = SPA.copy()
+    gui.progress_plus(10)
     ##############
 
     #print(SPA)
@@ -96,15 +98,15 @@ def solar_processor(cord, start1, end1, shape1, KPD1, tarif1):
                 if ((cur["elevation"] < elevation).all()):
                     # Только для строк с этим `value_A` изменяем значение `apparent_elevation` на 0
                     SPA.loc[(SPA['azimuth'] == value_A) & (SPA.index == time), 'apparent_elevation'] = 0
-    
+        gui.progress_plus(100/len(camera_data))           
 
     SPA['apparent_elevation'] = SPA['apparent_elevation'].clip(lower=0)
-    
-    print(SPA)
 
     DNI_extra = pvlib.irradiance.get_extra_radiation(times_loc, # Расчёт методом Specer
                                                  solar_constant=1366.1, 
                                                  method='spencer')
+    
+    gui.progress_plus(10)
     
     #Простая модель атмосферы    
     VerySimpleClearSky = pvlib.clearsky.simplified_solis(SPA['apparent_elevation'], 
@@ -114,17 +116,19 @@ def solar_processor(cord, start1, end1, shape1, KPD1, tarif1):
                                                      dni_extra=DNI_extra)
     ##############
 
+    gui.progress_plus(10)
+    
+
     VerySimpleClearSky['ghi'].plot(label='GHI') 
     plt.grid(linestyle='--')
     plt.legend()
-    plt.ylabel('Солнечное излучение, Вт/кв.м')
+    plt.ylabel('Интенсивность солнечного излучения, Вт/кв.м')
     plt.xlabel('Время')
-    plt.title('Солнечная радиация при ясном небе')    
+    plt.title('Приход солнечной радиации на горизонтальную площадку')    
 
     fig = plt.gcf()        
     ax = fig.gca()       
 
-    fig.canvas.manager.set_window_title("График")
     line = ax.lines[0]
     time_values = line.get_xdata() 
     radiation_values = line.get_ydata()
@@ -134,11 +138,17 @@ def solar_processor(cord, start1, end1, shape1, KPD1, tarif1):
     positive_radiation = np.maximum(0, radiation_values)
     total_radiation = np.trapz(positive_radiation, x=time_values_hours)
 
-    print("Суммарная солнечная радиация за период (Вт*ч/м²):", total_radiation)
-    print("Количество вырабатанной энергии с учётом КПД (Вт*ч):", total_radiation * KPD * shape / 100)
+    gui.progress_plus(10)
+
+    gui.show_text_window(round(total_radiation / 1000, 2), round(total_radiation * KPD * shape / 100 / 1000, 2), round(total_radiation * KPD * shape / 100 * tarif / 1000, 2))
+
+    print("Суммарная солнечная радиация за период (кВт*ч/м²):", total_radiation / 1000)
+    print("Количество вырабатанной энергии с учётом КПД (кВт*ч):", total_radiation * KPD * shape / 100 / 1000)
     print("Стоимость вырабатанной энергии (руб):", total_radiation * KPD * shape / 100 * tarif / 1000)
 
-    plt.show()
+    gui.show_plot_in_window(plt, "Солнечная радиация")
+
+    gui.progress_plus(-150)
 
     
 

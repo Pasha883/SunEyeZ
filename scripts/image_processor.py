@@ -9,6 +9,7 @@ import pvlib
 import datetime
 
 import scripts.solar_engine as eng
+import scripts.gui_module as gui
 
 
 def image_processor(path, ang, cords):
@@ -127,7 +128,10 @@ def image_processor(path, ang, cords):
     ax_image = fig.add_axes([0.1, 0.1, 0.8, 0.8])
     ax_image.imshow(res, alpha = .6, zorder=1)
     ax_image.set_axis_off()
-    fig.canvas.manager.set_window_title("Обработанное изображение")
+
+    gui.show_plot_in_window(plt, "Результат сегментировнаия")
+
+    plt.clf()
     ##############
     
     #Определяем азимут каждой точки контура и производим сортировку значений
@@ -175,10 +179,8 @@ def image_processor(path, ang, cords):
     fig.canvas.manager.set_window_title("Перевод в Декартову систему координат")
     ax.set_ylim((0, 90))
     ax.fill_between(res[:, 0], res[:, 1], 0)
-    plt.show()
-    ##############
+    gui.show_plot_in_window(plt, "Перевод в Декартову систему координат")
 
     plt.clf()
-    ax.cla()
-    fig.clf()
+    ##############
 
