@@ -1,8 +1,8 @@
 import cv2
 from datetime import datetime
 
-def capture_image(stream_url='rtsp://admin:mpei_2024@169.254.147.237/Streaming/Channels/101',
-                  save_path="../data/fish_eye"):
+def capture_image(stream_url='rtsp://admin:mpei_2024@169.254.79.237/Streaming/Channels/101',
+                  save_path="./data/fish_eye"):
     print("Start capturing")
     cap = cv2.VideoCapture(stream_url)
     if not cap.isOpened():

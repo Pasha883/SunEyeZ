@@ -21,12 +21,13 @@ def main():
     def process_image():
         ang = entr3.get()
         path = entr.get()
+        cords = entr2.get()
 
         file_path = Path(path)
 
-        if path != "" and ang != "":
+        if path != "" and ang != "" and cords != "":
             if file_path.is_file():
-                prc.image_processor(path, ang)
+                prc.image_processor(path, ang, cords)
             else:
                 messagebox.showerror("Ошибка", "Некоректный путь к файлу!")
         elif path == "":
@@ -34,6 +35,9 @@ def main():
             pass
         elif ang == "":
             messagebox.showerror("Ошибка", "Введите номинальный угол камеры рыбьего глаза!")
+            pass
+        elif cords == "":
+            messagebox.showerror("Ошибка", "Введите координаты!")
             pass
 
     def process_solar():
@@ -43,19 +47,20 @@ def main():
         end = entr5.get()
         shape = entr6.get()
         KPD = entr7.get()
+        tarif = entr8.get()
 
         if file_path.is_file():
             if crd == "":
                 messagebox.showerror("Ошибка", "Введите координаты!")
                 pass
-            eng.solar_processor(crd, start, end, shape, KPD)
+            eng.solar_processor(crd, start, end, shape, KPD, tarif)
         else:
             messagebox.showerror("Ошибка", "Выполните обработку изображения!")
             
 
     root = Tk()
     root.title("SunEyeZ")
-    root.geometry("400x400")
+    root.geometry("400x450")
     root.resizable(False, False)
 
     icon = PhotoImage(file="./data/ui/ZZ.png")
@@ -94,6 +99,15 @@ def main():
     entr3 = ttk.Entry(frame3)
     entr3.grid(row=0, column=1)
 
+    frame5 = ttk.Frame(borderwidth=1, relief=SOLID, padding=[8, 10])
+    frame5.pack(anchor=NW, fill=X, padx=5, pady=5)
+
+    label2 = ttk.Label(frame5, text="Географические координаты:")
+    label2.grid(row=0, column=0)
+
+    entr2 = ttk.Entry(frame5)
+    entr2.grid(row=0, column=1)
+
     # Кнопка для обработки изображения
     btn_3 = ttk.Button(text="Выполнить обработку изображения", command=process_image)
     btn_3.pack()
@@ -101,12 +115,6 @@ def main():
     # Третий фрейм для физических данных
     frame2 = ttk.Frame(borderwidth=1, relief=SOLID, padding=[8, 10])
     frame2.pack(anchor=NW, fill=X, padx=5, pady=5)
-
-    label2 = ttk.Label(frame2, text="Географические координаты:")
-    label2.grid(row=0, column=0)
-
-    entr2 = ttk.Entry(frame2)
-    entr2.grid(row=0, column=1)
 
     label4 = ttk.Label(frame2, text="**Начало периода отсчёта:")
     label4.grid(row=1, column=0)
@@ -135,6 +143,16 @@ def main():
 
     entr7 = ttk.Entry(frame4)
     entr7.grid(row=1, column=1)
+
+    # Пятый фрейм для данных панели
+    frame5 = ttk.Frame(borderwidth=1, relief=SOLID, padding=[8, 10])
+    frame5.pack(anchor=NW, fill=X, padx=5, pady=5)
+
+    label8 = ttk.Label(frame5, text="**Одноставочный тариф:")
+    label8.grid(row=0, column=0)
+
+    entr8 = ttk.Entry(frame5)
+    entr8.grid(row=0, column=1)
 
 
     btn_4 = ttk.Button(text="Выполнить расчёт", command=process_solar)

@@ -5,13 +5,51 @@ import pathlib
 import matplotlib.pyplot as plt
 import pandas as pd
 from tkinter import PhotoImage
+import pvlib
+import datetime
+
+import scripts.solar_engine as eng
 
 
-def image_processor(path, ang):
+def image_processor(path, ang, cords):
     #plt.clf()
 
     #Инициализируем данные
     angle = int(ang)
+
+    cords_str = str.split(cords, ", ")
+    cords = [float(num) for num in cords_str]
+
+    alt = eng.get_elevation(cords[0], cords[1])
+
+    loc = pvlib.location.Location(
+                                    cords[0], 
+                                    cords[1], 
+                                    tz='Europe/Moscow', 
+                                    altitude=alt, 
+                                    name='loc')
+    
+    times = pd.date_range(start=datetime.datetime(2021,6,20), # Момент начала периода моделирования
+             end=datetime.datetime(2021,6,21), # Момент окончания периода моделирования
+             freq='1h') # Дискретность моделирования
+    
+    times_loc = times.tz_localize(tz=loc.tz)
+
+    times2 = pd.date_range(start=datetime.datetime(2021,12,20), # Момент начала периода моделирования
+             end=datetime.datetime(2021,12,21), # Момент окончания периода моделирования
+             freq='1h') # Дискретность моделирования
+    
+    times_loc2 = times2.tz_localize(tz=loc.tz)
+
+    SPA1 = pvlib.solarposition.spa_python(times_loc, 
+                                     loc.latitude, 
+                                     loc.longitude, 
+                                     altitude=loc.altitude)
+    
+    SPA2 = pvlib.solarposition.spa_python(times_loc2, 
+                                     loc.latitude, 
+                                     loc.longitude, 
+                                     altitude=loc.altitude)
     ##############
     
 
@@ -33,15 +71,20 @@ def image_processor(path, ang):
     fin_contours = []
     result = img.copy()
     i = 1
+
+    fin_contours = sorted(contours, key=lambda x: cv2.arcLength(x, True), reverse=True)
+    
+    """
     for c in contours:
         perimeter = cv2.arcLength(c, True)
         if perimeter > 10000: 
-            cv2.drawContours(result, c, -1, (0,0,255), 1)
+            cv2.drawContours(result, c, -1, (0,255), 1)
             contour_img = np.zeros_like(img, dtype=np.uint8)
             cv2.drawContours(contour_img, c, -1, (0,0,255), 1)
             cv2.imwrite("temp/short_title_contour_{0}.jpg".format(i),contour_img)
             fin_contours.append(c)
         i = i + 1
+    """
     ##############
     
     #Узнаём реальный радиус окружности фишая
@@ -127,6 +170,8 @@ def image_processor(path, ang):
     #Отрисовываем полученные данные
     fig, ax = plt.subplots()
     ax.plot(res[:, 0], res[:,1])
+    ax.plot(SPA1["azimuth"], SPA1["elevation"])
+    ax.plot(SPA2["azimuth"], SPA2["elevation"])
     fig.canvas.manager.set_window_title("Перевод в Декартову систему координат")
     ax.set_ylim((0, 90))
     ax.fill_between(res[:, 0], res[:, 1], 0)

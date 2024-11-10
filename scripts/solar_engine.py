@@ -21,15 +21,18 @@ def get_elevation(lat, lon):
     except:
         return None
 
-def solar_processor(cord, start1, end1, shape1, KPD1):
+def solar_processor(cord, start1, end1, shape1, KPD1, tarif1):
     #Инициализируем данные
     shape = 1
     KPD = 100
+    tarif = 6.73
 
     if shape1 != "":
         shape = int(shape1)
     if KPD1 != "":
         KPD = int(KPD1)
+    if tarif1 != "":
+        tarif = int(tarif1)
 
     start = datetime.today()
     end = start + timedelta(days=1)
@@ -59,7 +62,7 @@ def solar_processor(cord, start1, end1, shape1, KPD1):
 
     times = pd.date_range(start=start, # Момент начала периода моделирования
              end=end, # Момент окончания периода моделирования
-             freq='1T') # Дискретность моделирования
+             freq='1h') # Дискретность моделирования
     
     # "Локализация" моентов времени
     times_loc = times.tz_localize(tz=loc.tz)
@@ -71,22 +74,29 @@ def solar_processor(cord, start1, end1, shape1, KPD1):
                                      altitude=loc.altitude)
     
     SPA['azimuth'] = SPA['azimuth'].round()
+
+    SPA_copy = SPA.copy()
     ##############
 
-    print(SPA)
+    #print(SPA)
 
+        
     for index, row in camera_data.iterrows():
         value_A = row["Azimuth"]
         elevation = row["Elevation"]
         
         if value_A in SPA['azimuth'].values:
             # Получаем соответствующие значения из 'apparent_elevation' для `value_A`
-            elevation_values = SPA.loc[SPA['azimuth'] == value_A, 'apparent_elevation']
+            sort = SPA.loc[SPA['azimuth'] == value_A]
+            times = sort.index
             
             # Проверяем, если все значения меньше `row["Elevation"]`
-            if (elevation_values < elevation).all():
-                # Только для строк с этим `value_A` изменяем значение `apparent_elevation` на 0
-                SPA.loc[SPA['azimuth'] == value_A, 'apparent_elevation'] = 0
+            for time in times:
+                cur = SPA.loc[(SPA['azimuth'] == value_A) & (SPA.index ==time)]
+                if ((cur["elevation"] < elevation).all()):
+                    # Только для строк с этим `value_A` изменяем значение `apparent_elevation` на 0
+                    SPA.loc[(SPA['azimuth'] == value_A) & (SPA.index == time), 'apparent_elevation'] = 0
+    
 
     SPA['apparent_elevation'] = SPA['apparent_elevation'].clip(lower=0)
     
@@ -126,6 +136,7 @@ def solar_processor(cord, start1, end1, shape1, KPD1):
 
     print("Суммарная солнечная радиация за период (Вт*ч/м²):", total_radiation)
     print("Количество вырабатанной энергии с учётом КПД (Вт*ч):", total_radiation * KPD * shape / 100)
+    print("Стоимость вырабатанной энергии (руб):", total_radiation * KPD * shape / 100 * tarif / 1000)
 
     plt.show()
 

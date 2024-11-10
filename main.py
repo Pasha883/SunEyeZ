@@ -1,5 +1,5 @@
 import scripts.temp_clear as tmp
 import scripts.gui_module as gui
 
-tmp.clear()
+#tmp.clear()
 gui.main()
