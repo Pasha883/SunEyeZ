@@ -137,16 +137,16 @@ def image_processor(path, ang, cords):
     for i in range(0, len(azimuths) - 1, 1):  # Шаг 10 для уменьшения количества стрелок
         ax_polar.annotate(
         '',  # Пустая строка, т.к. не нужен текст
-        xy=(azimuths[i + 1], elevations[i + 1]),  # Конечная точка стрелки
-        xytext=(azimuths[i], elevations[i]),  # Начальная точка стрелки
+        xy=(azimuths.iloc[i + 1], elevations.iloc[i + 1]),  # Конечная точка стрелки
+        xytext=(azimuths.iloc[i], elevations.iloc[i]),  # Начальная точка стрелки
         arrowprops=dict(arrowstyle="->", color="blue", lw=1.5)  # Параметры стрелки
     )
         
     for i in range(0, len(azimuths2) - 1, 1):  # Шаг 10 для уменьшения количества стрелок
         ax_polar.annotate(
         '',  # Пустая строка, т.к. не нужен текст
-        xy=(azimuths2[i + 1], elevations2[i + 1]),  # Конечная точка стрелки
-        xytext=(azimuths2[i], elevations2[i]),  # Начальная точка стрелки
+        xy=(azimuths2.iloc[i + 1], elevations2.iloc[i + 1]),  # Конечная точка стрелки
+        xytext=(azimuths2.iloc[i], elevations2.iloc[i]),  # Начальная точка стрелки
         arrowprops=dict(arrowstyle="->", color="yellow", lw=1.5)  # Параметры стрелки
     )
 

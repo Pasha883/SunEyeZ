@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 import pandas as pd
 import pvlib
-import ephem
 import requests
 import math
 import numpy as np
