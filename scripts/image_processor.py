@@ -117,14 +117,43 @@ def image_processor(path, ang, cords):
  
     r = np.ones(90)
 
+    SPA1_with_azimuth_index = SPA1.set_index("azimuth")
+
     fig = plt.gcf()
     axes_coords = [0.15, 0.03, 0.7, 0.95]
     ax_polar = fig.add_axes(axes_coords, projection = 'polar', zorder=2)
     ax_polar.patch.set_alpha(0.1)
+
+    ax_polar.set_theta_zero_location("N")
+    ax_polar.plot(np.radians(SPA1["azimuth"]),SPA1["elevation"], label="Траектория движения солнца в день летнего солнцестояния")
+    ax_polar.plot(np.radians(SPA2["azimuth"]),SPA2["elevation"], label="Траектория движения солнца в день зимнего солнцестояния")
+
+    azimuths = np.radians(SPA1["azimuth"])  # Преобразуем азимуты в радианы
+    elevations = SPA1["elevation"]
+
+    azimuths2= np.radians(SPA2["azimuth"])  # Преобразуем азимуты в радианы
+    elevations2 = SPA2["elevation"]
+
+    for i in range(0, len(azimuths) - 1, 1):  # Шаг 10 для уменьшения количества стрелок
+        ax_polar.annotate(
+        '',  # Пустая строка, т.к. не нужен текст
+        xy=(azimuths[i + 1], elevations[i + 1]),  # Конечная точка стрелки
+        xytext=(azimuths[i], elevations[i]),  # Начальная точка стрелки
+        arrowprops=dict(arrowstyle="->", color="blue", lw=1.5)  # Параметры стрелки
+    )
+        
+    for i in range(0, len(azimuths2) - 1, 1):  # Шаг 10 для уменьшения количества стрелок
+        ax_polar.annotate(
+        '',  # Пустая строка, т.к. не нужен текст
+        xy=(azimuths2[i + 1], elevations2[i + 1]),  # Конечная точка стрелки
+        xytext=(azimuths2[i], elevations2[i]),  # Начальная точка стрелки
+        arrowprops=dict(arrowstyle="->", color="yellow", lw=1.5)  # Параметры стрелки
+    )
+
+    ax_polar.set_rticks(np.append(np.arange(90 - angle/2, 90, 15), 90))
     ax_polar.set_rmin(90)
     ax_polar.set_rmax(90 - angle/2)
-    ax_polar.set_rticks(np.append(np.arange(90 - angle/2, 90, 15), 90))
-    ax_polar.set_theta_zero_location("N")
+    ax_polar.legend()
     ax_image = fig.add_axes([0.1, 0.1, 0.8, 0.8])
     ax_image.imshow(res, alpha = .6, zorder=1)
     ax_image.set_axis_off()
@@ -173,12 +202,15 @@ def image_processor(path, ang, cords):
 
     #Отрисовываем полученные данные
     fig, ax = plt.subplots()
-    ax.plot(res[:, 0], res[:,1])
-    ax.plot(SPA1["azimuth"], SPA1["elevation"])
-    ax.plot(SPA2["azimuth"], SPA2["elevation"])
+    ax.plot(res[:, 0], res[:,1], label="Угловой размер препятствий")
+    ax.plot(SPA1["azimuth"], SPA1["elevation"], label="Высота солнца в день летнего солнцестояния")
+    ax.plot(SPA2["azimuth"], SPA2["elevation"], label="Высота солнца в день зимнего солнцестояния")
+    plt.legend()
     fig.canvas.manager.set_window_title("Перевод в Декартову систему координат")
     ax.set_ylim((0, 90))
     ax.fill_between(res[:, 0], res[:, 1], 0)
+    plt.xlabel("Азимут, град.")
+    plt.ylabel("Угловой размер, град.")
     gui.show_plot_in_window(plt, "Перевод в Декартову систему координат")
 
     plt.clf()
