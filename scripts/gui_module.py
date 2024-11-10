@@ -18,8 +18,12 @@ import scripts.solar_engine as eng
 
 def progress_plus(a):
     global value
-    value += a
-    progress["value"] = value
+    if(a != -1):
+        value += a
+        progress["value"] = value
+    else:
+        value = 0
+        progress["value"] = value
     root.update_idletasks()
     
 def show_text_window(rad, fin, mon):
@@ -90,6 +94,10 @@ def main():
 
     #Обработка изображения
     def process_image():
+        global value
+        value = 0
+        progress["value"] = value
+        root.update_idletasks()
         ang = entr3.get()
         path = entr.get()
         cords = entr2.get()
@@ -169,7 +177,7 @@ def main():
     frame3 = ttk.Frame(borderwidth=1, relief=SOLID, padding=[8, 10])
     frame3.pack(anchor=NW, fill=X, padx=5, pady=5)
 
-    label3 = ttk.Label(frame3, text="Номинальный угол камеры рыбьего глаза:")
+    label3 = ttk.Label(frame3, text="Угол обзора камеры (град.):")
     label3.grid(row=0, column=0)
 
     entr3 = ttk.Entry(frame3)
@@ -178,7 +186,7 @@ def main():
     frame5 = ttk.Frame(borderwidth=1, relief=SOLID, padding=[8, 10])
     frame5.pack(anchor=NW, fill=X, padx=5, pady=5)
 
-    label2 = ttk.Label(frame5, text="Географические координаты:")
+    label2 = ttk.Label(frame5, text="Географические координаты (через запятую):")
     label2.grid(row=0, column=0)
 
     entr2 = ttk.Entry(frame5)
@@ -194,13 +202,13 @@ def main():
     frame2 = ttk.Frame(borderwidth=1, relief=SOLID, padding=[8, 10])
     frame2.pack(anchor=NW, fill=X, padx=5, pady=5)
 
-    label4 = ttk.Label(frame2, text="**Начало периода отсчёта:")
+    label4 = ttk.Label(frame2, text="**Начало периода отсчёта (ММ.ДД.ГГГГ):")
     label4.grid(row=1, column=0)
 
     entr4 = ttk.Entry(frame2)
     entr4.grid(row=1, column=1)
 
-    label5 = ttk.Label(frame2, text="**Конец периода отсчёта:")
+    label5 = ttk.Label(frame2, text="**Конец периода отсчёта (ММ.ДД.ГГГГ):")
     label5.grid(row=2, column=0)
 
     entr5 = ttk.Entry(frame2)
@@ -228,7 +236,7 @@ def main():
     frame5 = ttk.Frame(borderwidth=1, relief=SOLID, padding=[8, 10])
     frame5.pack(anchor=NW, fill=X, padx=5, pady=5)
 
-    label8 = ttk.Label(frame5, text="**Одноставочный тариф:")
+    label8 = ttk.Label(frame5, text="**Одноставочный тариф (руб/кВт*ч):")
     label8.grid(row=0, column=0)
 
     entr8 = ttk.Entry(frame5)

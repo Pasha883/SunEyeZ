@@ -150,8 +150,6 @@ def solar_processor(cord, start1, end1, shape1, KPD1, tarif1):
 
     plt.clf()
 
-    gui.progress_plus(-150)
-
     
 
     
