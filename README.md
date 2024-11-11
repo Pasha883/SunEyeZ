@@ -10,7 +10,7 @@
 * opencv-python
 * numpy
 * pathlib
-* scipy
+* scipy\
 Скачайте архив и запустите файл main.py.
 
 ## Использование
